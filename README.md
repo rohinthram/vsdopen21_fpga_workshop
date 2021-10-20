@@ -90,7 +90,7 @@ Core Logic
 ```
 
 ```
-![LED Lab](/assets/LED_Interfacing/led_lab.mp4)
+![LED Lab](/assets/LED_Interfacing/led_lab.gif)
 
 # Report By
 - R.V.Rohinth Ram
