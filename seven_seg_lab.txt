@@ -1,0 +1,81 @@
+\m4_TLV_version 1d: tl-x.org
+\SV
+   m4_include_lib(['https://raw.githubusercontent.com/BalaDhinesh/Virtual-FPGA-Lab/main/tlv_lib/fpga_includes.tlv'])
+   m4_makerchip_module   // (Expanded in Nav-TLV pane.)
+      reg [3:0] digit;
+      reg [6:0] seg;
+      reg dp;         //all active low
+      parameter [6:0] zero = 7'b0000001, one=7'b1001111, two=7'b0010010,
+                   three=7'b0000110, four=7'b1001100, five=7'b0100100,
+                   six=7'b0100000, seven=7'b0001111, eight=7'b0000000,
+                   nine=7'b0000100, a=7'b0000010, b=7'b1100000, c=7'b0110001,
+                   d = 7'b1000010, e=7'b0010000, f=7'b0111000;
+      reg [4:0] cnt = 0;
+      always @(posedge clk, posedge reset)
+      begin
+         if(reset)
+         begin
+            digit <= 0;
+            seg <= 0;
+            dp <= 0;
+            cnt <= 0;
+         end
+         else
+         begin
+            dp <= 1;
+            case(cnt)
+               0: seg <= zero;
+               1: seg <= one;
+               2: seg <= two;
+               3: seg <= three;
+               4: seg <= four;
+               5: seg <= five;
+               6: seg <= six;
+               7: seg <= seven;
+               8: seg <= eight;
+               9: seg <= nine;
+               10: seg <= a;
+               11: seg <= b;
+               12: seg <= c;
+               13: seg <= d;
+               14: seg <= e;
+               15: seg <= f;
+               default: seg <= 0;
+            endcase
+            cnt <= cnt + 1;
+            if(cnt>=15) cnt <= 0;
+         end
+         
+      end
+      
+\TLV
+   m4_define(M4_BOARD, 2)
+   m4+fpga_init()
+   m4+fpga_sseg(*digit, *seg, *dp)
+\SV
+   endmodule
+​
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Cycle: 
+19

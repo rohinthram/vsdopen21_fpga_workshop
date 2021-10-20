@@ -1,0 +1,159 @@
+\m4_TLV_version 1d -p verilog --bestsv --noline: tl-x.org
+\SV
+   m4_include_lib(['https://raw.githubusercontent.com/BalaDhinesh/Virtual-FPGA-Lab/main/tlv_lib/fpga_includes.tlv'])                   
+\SV
+   m4_makerchip_module   
+   wire [15:0] led;
+   reg [3:0] digit;
+   reg [6:0] segment;
+   wire  dp = 1;
+ 
+   reg [2:0] state;
+   reg [2:0] count;
+ 
+   parameter [2:0] NORTH	=	3'b000;
+   parameter [2:0] NORTH_Y	=	3'b001;
+   parameter [2:0] SOUTH	=	3'b010;
+   parameter [2:0] SOUTH_Y	=	3'b011;
+   parameter [2:0] EAST		=	3'b100;
+   parameter [2:0] EAST_Y	=	3'b101;
+   parameter [2:0] WEST		=	3'b110;
+   parameter [2:0] WEST_Y	=	3'b111;
+
+   always @(posedge clk, posedge reset)
+     begin
+        if (reset)
+            begin
+               state <= NORTH;
+               count <= 0;
+               
+            end
+        else
+            begin
+                case (state)
+                NORTH :
+                    begin
+                       digit <= 4'b0111;
+                       segment <= 7'b1110111;
+                       
+                        if(count>=7)
+                        begin
+                           count <= 0;
+                           state <= NORTH_Y;
+                        end
+                       else
+                          count <= count + 1;
+                    end
+
+                NORTH_Y :
+                    begin
+                        digit <= 4'b0111;
+                        segment <= 7'b1111110;
+                        if(count>=3)
+                        begin
+                           count <= 0;
+                           state <= SOUTH;
+                        end
+                        else
+                           count <= count + 1;
+                    end
+                   
+               SOUTH :
+                    begin
+                       digit <= 4'b1011;
+                       segment <= 7'b1110111;
+                       
+                        if(count>=7)
+                        begin
+                           count <= 0;
+                           state <= SOUTH_Y;
+                        end
+                       else
+                           count <= count + 1;
+                    end
+
+                SOUTH_Y :
+                    begin
+                        digit <= 4'b1011;
+                        segment <= 7'b1111110;
+                        if(count>=3)
+                        begin
+                           count <= 0;
+                           state <= EAST;
+                        end
+                       else
+                           count <= count + 1;
+                       
+                    end
+                   
+                EAST :
+                    begin
+                       digit <= 4'b1101;
+                       segment <= 7'b1110111;
+                       
+                        if(count>=7)
+                        begin
+                           count <= 0;
+                           state <= EAST_Y;
+                        end
+                       else
+                           count <= count + 1;
+                    end
+                EAST_Y :
+                    begin
+                        digit <= 4'b1101;
+                        segment <= 7'b1111110;
+                        if(count>=3)
+                        begin
+                           count <= 0;
+                           state <= WEST;
+                        end
+                       else
+                           count <= count + 1;
+                       
+                    end
+                WEST :
+                    begin
+                       digit <= 4'b1110;
+                       segment <= 7'b1110111;
+                       
+                        if(count>=7)
+                        begin
+                           count <= 0;
+                           state <= WEST_Y;
+                        end
+                       else
+                           count <= count + 1;
+                    end
+                WEST_Y :
+                    begin
+                        digit <= 4'b1110;
+                        segment <= 7'b1111110;
+                        if(count>=3)
+                        begin
+                           count <= 0;
+                           state <= NORTH;
+                        end
+                       else
+                           count <= count + 1;
+                       
+                    end
+            endcase
+				
+        end 
+    end 
+	assign led = count;
+
+\TLV
+   // M4_BOARD numbering
+   // 1 - Zedboard
+   // 2 - Artix-7
+   // 3 - Basys3
+   // 4 - Icebreaker
+   // 5 - Nexys
+   m4_define(M4_BOARD, 2)
+   m4+fpga_init()
+   m4+fpga_led(*led)
+   m4+fpga_sseg(*digit, *segment, *dp)
+\SV
+   endmodule
